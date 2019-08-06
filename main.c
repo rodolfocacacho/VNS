@@ -41,6 +41,8 @@
     SOFTWARE.
 */
 
+#include <pic18f46k22.h>
+
 #include "mcc_generated_files/mcc.h"
 
 /*******************************************************************************
@@ -75,6 +77,12 @@ void activar_modulos(void);
  Inicializa parametros del dispositivo con codiciones iniciales
  */
 void inicializar_dispositivo(void);
+
+/*
+ Estimula por el ancho de pulso correcto.
+ 130us - 1000us
+ */
+void estimular_pw(uint8_t pw);
 
 
 /*
@@ -186,6 +194,58 @@ void inicializar_dispositivo(void)
     cantidad_on = 10;
     active_mode = 0;
     first_time_mode = true;
+}
+
+void estimular_pw(uint8_t pw)
+{
+    switch(pw)
+    {
+        case 1:
+            LATAbits.LATA1 = 1;
+            LATAbits.LATA1 = 0;
+        break;
+            
+        case 2:
+            LATAbits.LATA1 = 1;
+            NOP();
+            LATAbits.LATA1 = 0;
+        break;
+        
+        case 3:
+            LATAbits.LATA1 = 1;
+            NOP();
+            NOP();
+            NOP();
+            LATAbits.LATA1 = 0;
+        break;
+        
+        case 4:
+            LATAbits.LATA1 = 1;
+            NOP();
+            NOP();
+            NOP();
+            NOP();
+            NOP();
+            LATAbits.LATA1 = 0;
+        break;
+        
+        case 5:
+            LATAbits.LATA1 = 1;
+            NOP();
+            NOP();
+            NOP();
+            NOP();
+            NOP();
+            NOP();
+            NOP();
+            LATAbits.LATA1 = 0;
+        break;
+        
+        default:
+            
+        break;
+    }
+            
 }
 
 /**
