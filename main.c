@@ -53,6 +53,8 @@ uint16_t volatile g_contador_pwm;
 uint16_t static cantidad_sleep;
 uint16_t static contador_sleep;
 bool static first_time_mode;
+uint16_t volatile g_freq_pwm;
+uint8_t volatile g_ancho_pulso_pwm;
 
 
 /*******************************************************************************
@@ -82,6 +84,7 @@ void main(void)
 {
     // Initialize the device
     SYSTEM_Initialize();
+    inicializar_dispositivo();
 
     // If using interrupts in PIC18 High/Low Priority Mode you need to enable the Global High and Low Interrupts
     // If using interrupts in PIC Mid-Range Compatibility Mode you need to enable the Global and Peripheral Interrupts
