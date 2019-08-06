@@ -51,12 +51,12 @@
 uint8_t static active_mode;
 uint16_t volatile g_contador_on;
 uint8_t static cantidad_on;
-uint16_t volatile g_contador_pwm;
 uint16_t static cantidad_sleep;
 uint16_t static contador_sleep;
 bool static first_time_mode;
-uint16_t volatile g_freq_pwm;
-uint8_t volatile g_ancho_pulso_pwm;
+uint16_t static freq_stim;
+uint8_t static ancho_pulso;
+bool volatile g_stimulate;
 
 
 /*******************************************************************************
@@ -119,7 +119,11 @@ void main(void)
                 activar_modulos();
                 first_time_mode = false;
             }
-            
+            if(g_stimulate)
+            {
+                estimular_pw(ancho_pulso);
+                g_stimulate = false;
+            }
             if(g_contador_on == cantidad_on)
             {
                 first_time_mode = true;
@@ -162,7 +166,7 @@ void main(void)
 void desactivar_modulos(void)
 {
     TMR0_StopTimer();
-    TMR2_StopTimer();
+    TMR1_StopTimer();
     TRISA = 0xFF;
     LATA = 0x00;
     contador_sleep = 0;
@@ -173,10 +177,11 @@ void desactivar_modulos(void)
  */
 void activar_modulos(void)
 {
+    TRISA = 0x02;
     TMR0_Initialize();
     TMR0_StartTimer();
-    TMR2_StartTimer();
-    TRISA = 0x02;
+    TMR1_StartTimer();
+    estimular_pw(ancho_pulso);
     LATA = 0x01;
     g_contador_on = 0;
 }
@@ -194,6 +199,7 @@ void inicializar_dispositivo(void)
     cantidad_on = 10;
     active_mode = 0;
     first_time_mode = true;
+    ancho_pulso = 1;
 }
 
 void estimular_pw(uint8_t pw)
