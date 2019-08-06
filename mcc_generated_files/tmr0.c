@@ -54,6 +54,7 @@
 /**
   Section: Global Variables Definitions
 */
+uint16_t volatile g_contador_on;
 
 void (*TMR0_InterruptHandler)(void);
 
@@ -151,6 +152,7 @@ void TMR0_SetInterruptHandler(void (* InterruptHandler)(void)){
 void TMR0_DefaultInterruptHandler(void){
     // add your TMR0 interrupt custom code
     // or set custom function using TMR0_SetInterruptHandler()
+    ++g_contador_on;
 }
 
 /**
