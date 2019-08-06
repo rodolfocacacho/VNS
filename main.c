@@ -43,6 +43,37 @@
 
 #include "mcc_generated_files/mcc.h"
 
+/*******************************************************************************
+ Declaracion de variables
+ ******************************************************************************/
+uint8_t static operation_mode;
+uint16_t volatile g_contador_on;
+uint8_t static cantidad_on;
+uint16_t volatile g_contador_pwm;
+uint16_t static cantidad_sleep;
+uint16_t static contador_sleep;
+
+
+/*******************************************************************************
+ Function Prototypes
+*******************************************************************************/
+
+/*
+ Funcion que desactiva modulos previo a ir a sleep
+ */
+void desactivar_modulos(void);
+
+/*
+ Funcion que activa perifericos/modulos previo a ir a sleep
+ */
+void activar_modulos(void);
+
+/*
+ Inicializa parametros del dispositivo con codiciones iniciales
+ */
+void inicializar_dispositivo(void);
+
+
 /*
                          Main application
  */
@@ -67,9 +98,49 @@ void main(void)
     // Disable the Peripheral Interrupts
     //INTERRUPT_PeripheralInterruptDisable();
 
-    while (1)
+    for(;;)
     {
-        // Add your application code
+        while(mode == 0)
+        {
+            if(first_mode == 1)
+            {
+                ActivateModules();
+                first_mode = 0;
+            }
+            
+            if(contador_on == cantidad_on)
+            {
+                first_mode = 1;
+                mode = 1;            
+            }
+            
+        
+        }
+        
+        while(mode == 1)
+        {
+            if(first_mode == 1)
+            {
+                DeactivateModules();
+                first_mode = 0;
+            }
+            
+            WDTCON = 0x1;
+            SLEEP();
+            NOP();
+            NOP();
+            ++contador_sleep;
+            
+            if (contador_sleep == cantidad_sleep)
+            {
+                WDTCON = 0;
+                mode = 0;
+                first_mode = 1;
+            }
+        
+        }
+        
+        
     }
 }
 /**
