@@ -46,12 +46,13 @@
 /*******************************************************************************
  Declaracion de variables
  ******************************************************************************/
-uint8_t static operation_mode;
+uint8_t static active_mode;
 uint16_t volatile g_contador_on;
 uint8_t static cantidad_on;
 uint16_t volatile g_contador_pwm;
 uint16_t static cantidad_sleep;
 uint16_t static contador_sleep;
+bool static first_time_mode;
 
 
 /*******************************************************************************
@@ -64,7 +65,7 @@ uint16_t static contador_sleep;
 void desactivar_modulos(void);
 
 /*
- Funcion que activa perifericos/modulos previo a ir a sleep
+ Funcion que activa perifericos/modulos previo a estimular
  */
 void activar_modulos(void);
 
@@ -100,29 +101,29 @@ void main(void)
 
     for(;;)
     {
-        while(mode == 0)
+        while(active_mode == 0)
         {
-            if(first_mode == 1)
+            if(first_time_mode)
             {
-                ActivateModules();
-                first_mode = 0;
+                activar_modulos();
+                first_time_mode = false;
             }
             
-            if(contador_on == cantidad_on)
+            if(g_contador_on == cantidad_on)
             {
-                first_mode = 1;
-                mode = 1;            
+                first_time_mode = true;
+                active_mode = 1;            
             }
             
         
         }
         
-        while(mode == 1)
+        while(active_mode == 1)
         {
-            if(first_mode == 1)
+            if(first_time_mode == true)
             {
-                DeactivateModules();
-                first_mode = 0;
+                desactivar_modulos();
+                first_time_mode = false;
             }
             
             WDTCON = 0x1;
@@ -134,8 +135,8 @@ void main(void)
             if (contador_sleep == cantidad_sleep)
             {
                 WDTCON = 0;
-                mode = 0;
-                first_mode = 1;
+                active_mode = 0;
+                first_time_mode = true;
             }
         
         }
@@ -143,6 +144,47 @@ void main(void)
         
     }
 }
+
+/*
+ Funcion que desactiva modulos previo a ir a sleep
+ */
+void desactivar_modulos(void)
+{
+    TMR0_StopTimer();
+    TMR2_StopTimer();
+    TRISA = 0xFF;
+    LATA = 0x00;
+    contador_sleep = 0;
+}
+
+/*
+ Funcion que activa perifericos/modulos previo a estimular
+ */
+void activar_modulos(void)
+{
+    TMR0_Initialize();
+    TMR0_StartTimer();
+    TMR2_StartTimer();
+    TRISA = 0x02;
+    LATA = 0x01;
+    g_contador_on = 0;
+}
+
+/*
+ Inicializa parametros del dispositivo con codiciones iniciales
+ */
+void inicializar_dispositivo(void)
+{
+    INTERRUPT_GlobalInterruptEnable();
+    INTERRUPT_PeripheralInterruptEnable();
+    contador_sleep = 0;
+    g_contador_on = 0;
+    cantidad_sleep = 1;
+    cantidad_on = 10;
+    active_mode = 0;
+    first_time_mode = true;
+}
+
 /**
  End of File
 */
