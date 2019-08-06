@@ -8,6 +8,9 @@
 #ifndef PWM_MANUAL_H
 #define	PWM_MANUAL_H
 
+#include <stdint.h>
+#include <stdbool.h>
+
 #ifdef	__cplusplus
 extern "C" {
 #endif
