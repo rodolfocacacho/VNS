@@ -206,17 +206,20 @@ void estimular_pw(uint8_t pw)
 {
     switch(pw)
     {
+        // 130us ancho de pulso
         case 1:
             LATAbits.LATA1 = 1;
             LATAbits.LATA1 = 0;
         break;
-            
+        
+        // 250us ancho de pulso
         case 2:
             LATAbits.LATA1 = 1;
             NOP();
             LATAbits.LATA1 = 0;
         break;
         
+        // 500us ancho de pulso
         case 3:
             LATAbits.LATA1 = 1;
             NOP();
@@ -225,6 +228,7 @@ void estimular_pw(uint8_t pw)
             LATAbits.LATA1 = 0;
         break;
         
+        // 750us ancho de pulso
         case 4:
             LATAbits.LATA1 = 1;
             NOP();
@@ -235,6 +239,7 @@ void estimular_pw(uint8_t pw)
             LATAbits.LATA1 = 0;
         break;
         
+        // 1000us ancho de pulso
         case 5:
             LATAbits.LATA1 = 1;
             NOP();
